@@ -15,16 +15,28 @@ public class Main extends Application {
 
     public void start(Stage primaryStage) throws Exception {
 
-        Button btn1 = new Button("Register");
-        TextField usernameBox = new TextField("Type your username");
-        TextField passwordBox = new TextField("Type your password");
-        usernameBox.setLayoutX(450);
-        usernameBox.setLayoutY(600);
-        passwordBox.setLayoutX(450);
-        passwordBox.setLayoutY(650);
-        btn1.setLayoutX(450);
-        btn1.setLayoutY(700);
-        btn1.setOnAction(new EventHandler<ActionEvent>() {
+        Button btnregister = new Button("Register");
+        TextField usernameBox = new TextField();
+        TextField passwordBox = new TextField();
+        Label usernameType= new Label("Type your username");
+        Label passwordType= new Label("Type your password");
+        Label loginText= new Label("Already have an account?");
+        Button btnlogin = new Button("Login");
+        usernameType.setLayoutX(75);
+        usernameType.setLayoutY(80);
+        passwordType.setLayoutX(75);
+        passwordType.setLayoutY(135);
+        usernameBox.setLayoutX(75);
+        usernameBox.setLayoutY(100);
+        passwordBox.setLayoutX(75);
+        passwordBox.setLayoutY(155);
+        btnregister.setLayoutX(120);
+        btnregister.setLayoutY(195);
+        loginText.setLayoutX(80);
+        loginText.setLayoutY(230);
+        btnlogin.setLayoutX(125);
+        btnlogin.setLayoutY(255);
+        btnregister.setOnAction(new EventHandler<ActionEvent>() {
 
             public void handle(ActionEvent arg0) {
                 System.out.println("Register");
@@ -34,10 +46,14 @@ public class Main extends Application {
         }
         );
         Pane root = new Pane();
-        root.getChildren().add(btn1);
+        root.getChildren().add(btnregister);
         root.getChildren().add(usernameBox);
         root.getChildren().add(passwordBox);
-        Scene scene = new Scene(root, 1000, 1000);
+        root.getChildren().add(usernameType);
+        root.getChildren().add(passwordType);
+        root.getChildren().add(loginText);
+        root.getChildren().add(btnlogin);
+        Scene scene = new Scene(root, 300, 400);
         primaryStage.setTitle("Register");
         primaryStage.setScene(scene);
         primaryStage.show();
