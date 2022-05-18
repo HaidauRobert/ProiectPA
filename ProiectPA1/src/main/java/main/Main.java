@@ -1,5 +1,6 @@
 package main;
 
+import dao.UserDAO;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -8,20 +9,24 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+
+import java.sql.SQLException;
+
+import static java.lang.Thread.sleep;
 
 public class Main extends Application {
 
     public void start(Stage primaryStage) throws Exception {
-
+        Pane root = new Pane();
+        UserDAO user = new UserDAO();
         Button btnregister = new Button("Register");
         TextField usernameBox = new TextField();
         TextField passwordBox = new TextField();
-        Label usernameType= new Label("Type your username");
-        Label passwordType= new Label("Type your password");
-        Label loginText= new Label("Already have an account?");
-        Button btnlogin = new Button("Login");
+        Label usernameType = new Label("Type your username");
+        Label passwordType = new Label("Type your password");
+        Label loginText = new Label("Already have an account?");
+        Button btnLogin = new Button("Login");
         usernameType.setLayoutX(75);
         usernameType.setLayoutY(80);
         passwordType.setLayoutX(75);
@@ -34,27 +39,84 @@ public class Main extends Application {
         btnregister.setLayoutY(195);
         loginText.setLayoutX(80);
         loginText.setLayoutY(230);
-        btnlogin.setLayoutX(125);
-        btnlogin.setLayoutY(255);
+        btnLogin.setLayoutX(125);
+        btnLogin.setLayoutY(255);
+        Label regSucces = new Label("Registration completed succesfully\nGo further by pressing the login button");
+        Label regFail = new Label("Registration has failed\nPlease try again using a different name");
         btnregister.setOnAction(new EventHandler<ActionEvent>() {
 
             public void handle(ActionEvent arg0) {
                 System.out.println("Register");
+                try {
+                    if (user.register(usernameBox.getText(),passwordBox.getText())==true)
+                    {
+                        regSucces.setLayoutX(75);
+                        regSucces.setLayoutY(30);
+                        root.getChildren().remove(regFail);
+                        root.getChildren().add(regSucces);
+                    }
+                    else
+                    {
+                        regFail.setLayoutX(75);
+                        regFail.setLayoutY(30);
+                        root.getChildren().remove(regSucces);
+                        root.getChildren().add(regFail);
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
                 System.out.println(usernameBox.getText());
                 System.out.println(passwordBox.getText());
+
             }
-        }
-        );
-        Pane root = new Pane();
+        });
         root.getChildren().add(btnregister);
         root.getChildren().add(usernameBox);
         root.getChildren().add(passwordBox);
         root.getChildren().add(usernameType);
         root.getChildren().add(passwordType);
         root.getChildren().add(loginText);
-        root.getChildren().add(btnlogin);
-        Scene scene = new Scene(root, 300, 400);
-        primaryStage.setTitle("Register");
+        root.getChildren().add(btnLogin);
+        btnLogin.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                root.getChildren().remove(btnregister);
+                root.getChildren().remove(loginText);
+                root.getChildren().remove(btnLogin);
+                root.getChildren().remove(regFail);
+                root.getChildren().remove(regSucces);
+                Button btnLoginNou = new Button("Login");
+                btnLoginNou.setLayoutX(120);
+                btnLoginNou.setLayoutY(195);
+                root.getChildren().add(btnLoginNou);
+                btnLoginNou.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        int userCurentId=0;
+                        try {
+                            userCurentId = user.login(usernameBox.getText(),passwordBox.getText());
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                        if (userCurentId!=0) {
+                            Pane root2 = new Pane();
+                            Scene scenaHarta = new Scene(root2, 1000, 1000);
+                            primaryStage.setTitle("RouteSeeker");
+                            primaryStage.setScene(scenaHarta);
+                            primaryStage.show();
+                        }
+                        else
+                        {
+                            Label loginFailed=new Label("Login has failed.\nPlease review your credentials");
+                            loginFailed.setLayoutX(75);
+                            loginFailed.setLayoutY(30);
+                            root.getChildren().add(loginFailed);
+                        }
+                    }
+                });
+            }
+        }); Scene scene = new Scene(root, 300, 400);
+        primaryStage.setTitle("Autentification");
         primaryStage.setScene(scene);
         primaryStage.show();
     }

@@ -1,14 +1,32 @@
 package dao;
-import java.sql.*;
+
 import database.Database;
+
+import java.sql.*;
+
 public class UserDAO {
-    public void create(String username, String password) throws SQLException {
+    public boolean register(String name, String password) throws SQLException {
         Connection con = Database.getConnection();
-        try (PreparedStatement pstmt = con.prepareStatement("insert into users (username,password) values (?,?)")) {
-            pstmt.setString(1, username);
-            pstmt.setString(2, password);
-            pstmt.executeUpdate();
-            con.commit();
+        try (Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery("select id from useri where name='" + name + "'")) {
+            if (rs.next() == false) {
+                try (PreparedStatement pstmt = con.prepareStatement("insert into useri (name, password) values (?,?)")) {
+                    pstmt.setString(1, name);
+                    pstmt.setString(2, password);
+                    pstmt.executeUpdate();
+                    con.commit();
+                    return true;
+                }
+            } else
+                return false;
+        }
+    }
+
+    public int login(String name, String password) throws SQLException {
+        Connection con = Database.getConnection();
+        try (Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery("select id from useri where name='" + name + "' and password='" + password + "'" )) {
+            return rs.next() ? rs.getInt(1) : 0;
         }
     }
 }
