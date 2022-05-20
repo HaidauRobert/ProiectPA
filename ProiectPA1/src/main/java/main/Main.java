@@ -7,13 +7,12 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import models.Node;
 import models.Street;
@@ -22,12 +21,154 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class Main extends Application {
+    public void afiseazaButoane(Pane root2, Stage primaryStage) throws Exception {
+        int harta = 0;
+        MenuButton alegeHarta = new MenuButton("Alege harta");
+        MenuItem menuItem1 = new MenuItem("Harta 1");
+        MenuItem menuItem2 = new MenuItem("Harta 2");
+        MenuItem menuItem3 = new MenuItem("Harta 3");
+        menuItem1.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Pane rootNou = new Pane();
+                Scene scenaHarta = new Scene(rootNou, 1000, 1000);
+                primaryStage.setScene(scenaHarta);
+                primaryStage.show();
+                try {
+                    afiseazaPuncte(rootNou, 0);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    afiseazaStrazi(rootNou, 0);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    afiseazaButoane(rootNou, primaryStage);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        menuItem2.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Pane rootNou = new Pane();
+                Scene scenaHarta = new Scene(rootNou, 1000, 1000);
+                primaryStage.setScene(scenaHarta);
+                primaryStage.show();
+                try {
+                    afiseazaPuncte(rootNou, 1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    afiseazaStrazi(rootNou, 1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    afiseazaButoane(rootNou, primaryStage);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        menuItem3.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Pane rootNou = new Pane();
+                Scene scenaHarta = new Scene(rootNou, 1000, 1000);
+                primaryStage.setScene(scenaHarta);
+                primaryStage.show();
+                try {
+                    afiseazaPuncte(rootNou, 2);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    afiseazaStrazi(rootNou, 2);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    afiseazaButoane(rootNou, primaryStage);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        alegeHarta.getItems().addAll(menuItem1, menuItem2, menuItem3);
+        alegeHarta.setLayoutY(600);
+        alegeHarta.setLayoutX(50);
+        alegeHarta.setPrefHeight(100);
+        alegeHarta.setPrefWidth(300);
+        Font font = new Font(40);
+        alegeHarta.setFont(font);
+        root2.getChildren().add(alegeHarta);
+        Font font2 = new Font(25);
+        Button alegePunct = new Button("Alege punctul de plecare");
+        alegePunct.setLayoutY(600);
+        alegePunct.setLayoutX(350);
+        alegePunct.setPrefHeight(100);
+        alegePunct.setPrefWidth(300);
+        alegePunct.setFont(font2);
+        root2.getChildren().add(alegePunct);
+        Button aflaRuta = new Button("Afla ruta");
+        aflaRuta.setLayoutY(600);
+        aflaRuta.setLayoutX(650);
+        aflaRuta.setPrefHeight(100);
+        aflaRuta.setPrefWidth(300);
+        aflaRuta.setFont(font);
+        root2.getChildren().add(aflaRuta);
+    }
+
+    public void afiseazaPuncte(Pane root2, int harta) throws Exception {
+        NodeDAO nodes = new NodeDAO();
+        ArrayList<Node> puncte = new ArrayList<>();
+        try {
+            puncte = nodes.genereazaHarta(harta);
+            for (Node i : puncte) {
+                Circle cerc = new Circle();
+                cerc.setCenterX(i.getX());
+                cerc.setCenterY(i.getY());
+                cerc.setRadius(10);
+                root2.getChildren().add(cerc);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void afiseazaStrazi(Pane root2, int harta) throws Exception {
+        StreetDAO streets = new StreetDAO();
+        NodeDAO nodes = new NodeDAO();
+        ArrayList<Node> puncte = new ArrayList<>();
+        puncte = nodes.genereazaHarta(harta);
+        ArrayList<Street> strazi = new ArrayList<>();
+        strazi = streets.genereazaStrazi(harta);
+        for (Street i : strazi) {
+            Line linie = new Line();
+            linie.setStrokeWidth(2);
+            linie.setStroke(Color.GRAY);
+            for (Node j : puncte) {
+                if (j.getId() == i.getIdNodeStart()) {
+                    linie.setStartX(j.getX());
+                    linie.setStartY(j.getY());
+                }
+                if (j.getId() == i.getIdNodeEnd()) {
+                    linie.setEndX(j.getX());
+                    linie.setEndY(j.getY());
+                }
+            }
+            root2.getChildren().add(linie);
+        }
+    }
 
     public void start(Stage primaryStage) throws Exception {
         Pane root = new Pane();
         UserDAO user = new UserDAO();
-        NodeDAO nodes = new NodeDAO();
-        StreetDAO streets = new StreetDAO();
         Button btnregister = new Button("Register");
         TextField usernameBox = new TextField();
         TextField passwordBox = new TextField();
@@ -109,42 +250,21 @@ public class Main extends Application {
                             primaryStage.setTitle("RouteSeeker");
                             primaryStage.setScene(scenaHarta);
                             primaryStage.show();
-                            ArrayList<Node> puncte=new ArrayList<>();
                             try {
-                                puncte = nodes.genereazaHarta();
-                                for (Node i : puncte) {
-                                    Circle cerc = new Circle();
-                                    cerc.setCenterX(i.getX());
-                                    cerc.setCenterY(i.getY());
-                                    cerc.setRadius(10);
-                                    root2.getChildren().add(cerc);
-                                }
-                            } catch (SQLException e) {
+                                afiseazaPuncte(root2, 0);
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            ArrayList<Street> strazi = new ArrayList<>();
                             try {
-                                strazi = streets.genereazaStrazi();
-                            } catch (SQLException e) {
+                                afiseazaStrazi(root2, 0);
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            for (Street i : strazi) {
-                                Line linie = new Line();
-                                linie.setStrokeWidth(2);
-                                linie.setStroke(Color.GRAY);
-                                for (Node j : puncte) {
-                                    if (j.getId() == i.getIdNodeStart()) {
-                                        linie.setStartX(j.getX());
-                                        linie.setStartY(j.getY());
-                                    }
-                                    if (j.getId() == i.getIdNodeEnd()) {
-                                        linie.setEndX(j.getX());
-                                        linie.setEndY(j.getY());
-                                    }
-                                }
-                                root2.getChildren().add(linie);
+                            try {
+                                afiseazaButoane(root2, primaryStage);
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
-
                         } else {
                             Label loginFailed = new Label("Login has failed.\nPlease review your credentials");
                             loginFailed.setLayoutX(75);
