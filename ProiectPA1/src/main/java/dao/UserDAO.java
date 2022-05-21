@@ -11,10 +11,10 @@ public class UserDAO {
         try (Statement stmt = con.createStatement();
              ResultSet rs = stmt.executeQuery("select id from users where name='" + name + "'")) {
             if (rs.next() == false) {
-                try (PreparedStatement pstmt = con.prepareStatement("insert into users (name, password) values (?,?)")) {
-                    pstmt.setString(1, name);
-                    pstmt.setString(2, password);
-                    pstmt.executeUpdate();
+                try (PreparedStatement userStmt = con.prepareStatement("insert into users (name, password) values (?,?)")) {
+                    userStmt.setString(1, name);
+                    userStmt.setString(2, password);
+                    userStmt.executeUpdate();
                     con.commit();
                     return true;
                 }

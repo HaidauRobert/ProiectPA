@@ -33,7 +33,7 @@ public class Main extends Application {
             @Override
             public void handle(ActionEvent event) {
                 Pane newRoot = new Pane();
-                Scene mapScene = new Scene(newRoot, 1000, 1000);
+                Scene mapScene = new Scene(newRoot, 100, 100);
                 primaryStage.setScene(mapScene);
                 primaryStage.show();
                 try {
@@ -81,30 +81,42 @@ public class Main extends Application {
             }
         });
 
+        Font fontText = new Font(12);
         btnChooseMap.getItems().addAll(menuItem1, menuItem2, menuItem3);
         btnChooseMap.setLayoutY(600);
         btnChooseMap.setLayoutX(50);
-        btnChooseMap.setPrefHeight(100);
-        btnChooseMap.setPrefWidth(300);
-        Font font = new Font(40);
-        btnChooseMap.setFont(font);
+        btnChooseMap.setPrefHeight(50);
+        btnChooseMap.setPrefWidth(170);
+        btnChooseMap.setFont(fontText);
         root.getChildren().add(btnChooseMap);
-        Font font2 = new Font(25);
 
         Button btnChooseNode = new Button("Choose the start point.");
         btnChooseNode.setLayoutY(600);
-        btnChooseNode.setLayoutX(350);
-        btnChooseNode.setPrefHeight(100);
-        btnChooseNode.setPrefWidth(300);
-        btnChooseNode.setFont(font2);
+        btnChooseNode.setLayoutX(270);
+        btnChooseNode.setPrefHeight(50);
+        btnChooseNode.setPrefWidth(170);
+        btnChooseNode.setFont(fontText);
         root.getChildren().add(btnChooseNode);
+
+        TextField lengthField = new TextField("Write approximate length in m");
+        lengthField.setLayoutY(615);
+        lengthField.setLayoutX(490);
+        lengthField.setPrefWidth(250);
+        root.getChildren().add(lengthField);
+
         Button findRoute = new Button("Find route");
         findRoute.setLayoutY(600);
-        findRoute.setLayoutX(650);
-        findRoute.setPrefHeight(100);
-        findRoute.setPrefWidth(300);
-        findRoute.setFont(font);
+        findRoute.setLayoutX(790);
+        findRoute.setPrefHeight(50);
+        findRoute.setPrefWidth(170);
+        findRoute.setFont(fontText);
         root.getChildren().add(findRoute);
+
+
+
+
+
+
     }
 
     public void displayNodes(Pane sceneRoot, int nrMap) throws Exception {
@@ -136,7 +148,7 @@ public class Main extends Application {
         streets = streetsDao.generateStreets(nrMap);
 
         for (Street street : streets) {
-            System.out.println(street);
+
             Line lineStreet = new Line();
             lineStreet.setStrokeWidth(2);
             lineStreet.setStroke(Color.GRAY);
@@ -145,18 +157,15 @@ public class Main extends Application {
 
                 System.out.println(node);
                 if (node.getId() == street.getIdNodeStart()) {
-                    System.out.println(street);
+
                     lineStreet.setStartX(node.getX());
                     lineStreet.setStartY(node.getY());
                 }
                 if (node.getId() == street.getIdNodeEnd()) {
-                    System.out.println(street);
+
                     lineStreet.setEndX(node.getX());
                     lineStreet.setEndY(node.getY());
                 }
-                System.out.println(node.getX() + " " + node.getY());
-                System.out.println(lineStreet.getStartX() +" "+ lineStreet.getStartY());
-
             }
 
             sceneRoot.getChildren().add(lineStreet);
