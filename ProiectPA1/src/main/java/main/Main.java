@@ -16,6 +16,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import models.Node;
 import models.Street;
+import javafx.scene.input.MouseEvent;
 import utils.ImportData;
 
 import java.io.IOException;
@@ -23,8 +24,25 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class Main extends Application {
+
+    int nrMap;
+
+    public Node checkNodeInGraph(int x, int y, int nrMap) throws SQLException {
+        NodeDAO nodesDao = new NodeDAO();
+        List<Node> nodes = nodesDao.generateNodes(nrMap);
+        int nodeSize = 10;
+
+        for (Node node : nodes) {
+            if (x >= (node.getX() - nodeSize / 2) && x <= (node.getX() + nodeSize / 2) &&
+                    y > (node.getY() - nodeSize / 2) && y < (node.getY() + nodeSize / 2)) {
+                return new Node(node.getX(), node.getY());
+            }
+        }
+        return null;
+    }
+
     public void displayButtons(Pane root, Stage primaryStage) throws Exception {
-        int nrMap = 1;
+
         MenuButton btnChooseMap = new MenuButton("Choose map:");
         MenuItem menuItem1 = new MenuItem("Map 1");
         MenuItem menuItem2 = new MenuItem("Map 2");
@@ -36,6 +54,7 @@ public class Main extends Application {
                 Scene mapScene = new Scene(newRoot, 100, 100);
                 primaryStage.setScene(mapScene);
                 primaryStage.show();
+                nrMap = 1;
                 try {
 
                     displayNodes(newRoot, 1);
@@ -51,10 +70,12 @@ public class Main extends Application {
         menuItem2.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+
                 Pane newRoot = new Pane();
                 Scene mapScene = new Scene(newRoot, 1000, 1000);
                 primaryStage.setScene(mapScene);
                 primaryStage.show();
+                nrMap = 2;
                 try {
                     displayNodes(newRoot, 2);
                     displayStreets(newRoot, 2);
@@ -71,6 +92,7 @@ public class Main extends Application {
                 Scene mapScene = new Scene(newRoot, 1000, 1000);
                 primaryStage.setScene(mapScene);
                 primaryStage.show();
+                nrMap = 3;
                 try {
                     displayNodes(newRoot, 3);
                     displayStreets(newRoot, 3);
@@ -98,8 +120,42 @@ public class Main extends Application {
         btnChooseNode.setFont(fontText);
         root.getChildren().add(btnChooseNode);
 
-        TextField lengthField = new TextField("Write approximate length in m");
-        lengthField.setLayoutY(615);
+        btnChooseNode.setOnAction(new EventHandler<ActionEvent>() {
+            Boolean oneChoose = false;
+
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                root.setOnMousePressed(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent mouseEvent) {
+                        System.out.println(mouseEvent.getX());
+                        System.out.println(mouseEvent.getY());
+                        try {
+                            Node choseCircle = checkNodeInGraph((int) mouseEvent.getX(), (int) mouseEvent.getY(), nrMap);
+                            if (choseCircle != null && !oneChoose) {
+                                Circle circleNode = new Circle();
+                                circleNode.setCenterX(choseCircle.getX());
+                                circleNode.setCenterY(choseCircle.getY());
+                                circleNode.setFill(Color.RED);
+                                circleNode.setRadius(10);
+                                oneChoose = true;
+                                root.getChildren().add(circleNode);
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                });
+            }
+        });
+        Label descLength = new Label("Write approximate length in m:");
+        descLength.setLayoutY(600);
+        descLength.setLayoutX(490);
+        root.getChildren().add(descLength);
+
+        TextField lengthField = new TextField();
+        lengthField.setLayoutY(625);
         lengthField.setLayoutX(490);
         lengthField.setPrefWidth(250);
         root.getChildren().add(lengthField);
@@ -111,11 +167,6 @@ public class Main extends Application {
         findRoute.setPrefWidth(170);
         findRoute.setFont(fontText);
         root.getChildren().add(findRoute);
-
-
-
-
-
 
     }
 
@@ -261,6 +312,7 @@ public class Main extends Application {
                             primaryStage.setTitle("RouteSeeker");
                             primaryStage.setScene(mapScene);
                             primaryStage.show();
+                            nrMap = 1;
                             try {
                                 System.out.println("salutare");
                                 displayNodes(mapRoot, 1);
@@ -293,15 +345,16 @@ public class Main extends Application {
         StreetDAO streetDAO = new StreetDAO();
         ImportData infos = new ImportData();
 
-        for(Node node : infos.nodesImport()){
+        for (Node node : infos.nodesImport()) {
             nodeDao.createNode(node);
         }
 
-        for(Street street : infos.streetsImport()){
+        for (Street street : infos.streetsImport()) {
             streetDAO.createStreet(street);
         }
 
     }
+
     public static void main(String[] args) throws IOException, SQLException {
 
         populateTables();
