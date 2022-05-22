@@ -128,8 +128,7 @@ public class Main extends Application {
                 root.setOnMousePressed(new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent mouseEvent) {
-                        System.out.println(mouseEvent.getX());
-                        System.out.println(mouseEvent.getY());
+
                         try {
                             Node choseCircle = checkNodeInGraph((int) mouseEvent.getX(), (int) mouseEvent.getY(), nrMap);
                             if (choseCircle != null && !oneChoose) {
@@ -206,7 +205,6 @@ public class Main extends Application {
 
             for (Node node : nodes) {
 
-                System.out.println(node);
                 if (node.getId() == street.getIdNodeStart()) {
 
                     lineStreet.setStartX(node.getX());
