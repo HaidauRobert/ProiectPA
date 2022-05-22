@@ -1,7 +1,11 @@
 package models;
+
 import dao.NodeDAO;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import static java.lang.Math.sqrt;
 
@@ -13,15 +17,17 @@ public class Street {
     int nrMap;
     int length;
 
-    public Street(){}
+    public Street() {
+    }
 
-    public Street(int id, String name, int idNodeStart, int idNodeEnd, int length,  int nrMap) {
+    public Street(int id, String name, int idNodeStart, int idNodeEnd, int length, int nrMap) {
         this.id = id;
         this.name = name;
         this.idNodeStart = idNodeStart;
         this.idNodeEnd = idNodeEnd;
         this.nrMap = nrMap;
         this.length = length;
+
     }
 
     public int getId() {

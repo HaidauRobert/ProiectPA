@@ -15,5 +15,5 @@ module com.example.proiectpa1 {
     opens controller to javafx.fxml;
     exports main;
     opens main to javafx.fxml;
-    opens models to opencsv;
+    opens models to opencsv, org.jgrapht.core;
 }

@@ -60,8 +60,9 @@ public class NodeDAO {
         Connection con = Database.getConnection();
         try (Statement continentStmt = con.createStatement();
              ResultSet rs = continentStmt.executeQuery(
-                     "select x, y from nodes where id='" + id + "'")) {
-            return rs.next() ? (new Node(rs.getInt(1), rs.getInt(2))) : null;
+                     "select id, name, x, y, nr_map from nodes where id='" + id + "'")) {
+            return rs.next() ? (new Node(rs.getInt(1), rs.getString(2), rs.getInt(3),
+                    rs.getInt(4), rs.getInt(5))) : null;
         }
     }
 
@@ -71,9 +72,10 @@ public class NodeDAO {
         Connection con = Database.getConnection();
 
         try (Statement stmt = con.createStatement();
-             ResultSet rs = stmt.executeQuery("select id, name, x, y from nodes where nr_map='" + nrMap + "'")) {
+             ResultSet rs = stmt.executeQuery("select id, name, x, y, nr_map from nodes where nr_map='" + nrMap + "'")) {
             while (rs.next()) {
-                Node nod = new Node(rs.getInt(1), rs.getString(2), rs.getInt(3), rs.getInt(4));
+                Node nod = new Node(rs.getInt(1), rs.getString(2), rs.getInt(3),
+                        rs.getInt(4), rs.getInt(5));
                 nodes.add(nod);
             }
 

@@ -1,5 +1,7 @@
 package models;
 
+import java.util.Objects;
+
 public class Node {
     int id;
     String name;
@@ -18,6 +20,14 @@ public class Node {
     public Node(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+
+    public Node(int id, String name, int x, int y, int nrMap) {
+        this.id = id;
+        this.name = name;
+        this.x = x;
+        this.y = y;
+        this.nrMap = nrMap;
     }
 
     @Override
@@ -68,6 +78,19 @@ public class Node {
 
     public void setNrMap(int nrMap) {
         this.nrMap = nrMap;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Node node = (Node) o;
+        return id == node.id && x == node.x && y == node.y && nrMap == node.nrMap && Objects.equals(name, node.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, x, y, nrMap);
     }
 }
 

@@ -1,5 +1,6 @@
 package main;
 
+import algorithm.Route;
 import dao.NodeDAO;
 import dao.StreetDAO;
 import dao.UserDAO;
@@ -35,7 +36,7 @@ public class Main extends Application {
         for (Node node : nodes) {
             if (x >= (node.getX() - nodeSize / 2) && x <= (node.getX() + nodeSize / 2) &&
                     y > (node.getY() - nodeSize / 2) && y < (node.getY() + nodeSize / 2)) {
-                return new Node(node.getX(), node.getY());
+                return node;
             }
         }
         return null;
@@ -121,43 +122,60 @@ public class Main extends Application {
         root.getChildren().add(btnChooseNode);
 
         btnChooseNode.setOnAction(new EventHandler<ActionEvent>() {
-            Boolean oneChoose = false;
-
             @Override
             public void handle(ActionEvent actionEvent) {
                 root.setOnMousePressed(new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent mouseEvent) {
 
+
+                        Node choseCircle = null;
                         try {
-                            Node choseCircle = checkNodeInGraph((int) mouseEvent.getX(), (int) mouseEvent.getY(), nrMap);
-                            if (choseCircle != null && !oneChoose) {
-                                Circle circleNode = new Circle();
-                                circleNode.setCenterX(choseCircle.getX());
-                                circleNode.setCenterY(choseCircle.getY());
-                                circleNode.setFill(Color.RED);
-                                circleNode.setRadius(10);
-                                oneChoose = true;
-                                root.getChildren().add(circleNode);
-                            }
+                            choseCircle = checkNodeInGraph((int) mouseEvent.getX(), (int) mouseEvent.getY(), nrMap);
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
+                        if (choseCircle != null) {
+                            Circle circleNode = new Circle();
+                            circleNode.setCenterX(choseCircle.getX());
+                            circleNode.setCenterY(choseCircle.getY());
+                            circleNode.setFill(Color.RED);
+                            circleNode.setRadius(10);
+                            root.getChildren().add(circleNode);
+                            btnChooseNode.setDisable(true);
 
+
+                        }
                     }
                 });
+
+
+                Route alg = new Route();
+
+                try {
+                    alg.createGraph(nrMap);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+
             }
+
         });
         Label descLength = new Label("Write approximate length in m:");
         descLength.setLayoutY(600);
         descLength.setLayoutX(490);
-        root.getChildren().add(descLength);
+        root.getChildren().
+
+                add(descLength);
 
         TextField lengthField = new TextField();
         lengthField.setLayoutY(625);
         lengthField.setLayoutX(490);
         lengthField.setPrefWidth(250);
-        root.getChildren().add(lengthField);
+        root.getChildren().
+
+                add(lengthField);
 
         Button findRoute = new Button("Find route");
         findRoute.setLayoutY(600);
@@ -165,7 +183,9 @@ public class Main extends Application {
         findRoute.setPrefHeight(50);
         findRoute.setPrefWidth(170);
         findRoute.setFont(fontText);
-        root.getChildren().add(findRoute);
+        root.getChildren().
+
+                add(findRoute);
 
     }
 
