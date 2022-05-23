@@ -15,19 +15,24 @@ public class UserDAO {
                     userStmt.setString(1, name);
                     userStmt.setString(2, password);
                     userStmt.executeUpdate();
-                    con.commit();
+
                     return true;
                 }
             } else
                 return false;
+        } finally {
+            con.commit();
+            con.close();
         }
     }
 
     public int login(String name, String password) throws SQLException {
         Connection con = Database.getConnection();
         try (Statement stmt = con.createStatement();
-             ResultSet rs = stmt.executeQuery("select id from users where name='" + name + "' and password='" + password + "'" )) {
+             ResultSet rs = stmt.executeQuery("select id from users where name='" + name + "' and password='" + password + "'")) {
             return rs.next() ? rs.getInt(1) : 0;
+        } finally {
+            con.close();
         }
     }
 }

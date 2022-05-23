@@ -24,17 +24,16 @@ public class StreetDAO {
                 countStreets = (rs.getInt(1));
             }
             if (countStreets == 0) {
-                con.close();
                 return false;
             }
-            con.close();
             return true;
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        con.close();
+        finally {
+            con.close();
+        }
         return false;
     }
 
@@ -51,10 +50,12 @@ public class StreetDAO {
                 streetStmt.setInt(5, newStreet.getNrMap());
                 streetStmt.executeUpdate();
                 con.commit();
-                con.close();
 
             } catch (SQLException e) {
                 e.printStackTrace();
+            }
+            finally {
+                con.close();
             }
         }
     }
@@ -72,7 +73,9 @@ public class StreetDAO {
             }
 
         }
-        con.close();
+        finally {
+            con.close();
+        }
         return streets;
     }
 

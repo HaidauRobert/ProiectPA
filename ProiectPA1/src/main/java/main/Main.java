@@ -28,6 +28,52 @@ public class Main extends Application {
 
     int nrMap;
 
+    public void messageBox(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Message Here...");
+        alert.setContentText(message);
+        alert.showAndWait().ifPresent(rs -> {
+            if (rs == ButtonType.OK) {
+                System.out.println("Pressed OK.");
+            }
+        });
+    }
+
+    public void drawPath(Pane root, List<Node> nodesPath){
+
+        Node previousNode = nodesPath.get(0);
+        for (int index = 1; index < nodesPath.size(); index++) {
+
+            Line lineStreet = new Line();
+            lineStreet.setStrokeWidth(2);
+            lineStreet.setStroke(Color.RED);
+            lineStreet.setStartX(previousNode.getX());
+            lineStreet.setStartY(previousNode.getY());
+            lineStreet.setEndX(nodesPath.get(index).getX());
+            lineStreet.setEndY(nodesPath.get(index).getY());
+            root.getChildren().add(lineStreet);
+            Circle circleNode = new Circle();
+
+            circleNode.setCenterX(nodesPath.get(index).getX());
+            circleNode.setCenterY(nodesPath.get(index).getY());
+            circleNode.setFill(Color.RED);
+            circleNode.setRadius(10);
+
+            root.getChildren().add(circleNode);
+            previousNode = nodesPath.get(index);
+
+        }
+        Line lineStreet = new Line();
+        lineStreet.setStrokeWidth(2);
+        lineStreet.setStroke(Color.RED);
+        lineStreet.setStartX(previousNode.getX());
+        lineStreet.setStartY(previousNode.getY());
+        lineStreet.setEndX(nodesPath.get(0).getX());
+        lineStreet.setEndY(nodesPath.get(0).getY());
+        root.getChildren().add(lineStreet);
+
+    }
+
     public Node checkNodeInGraph(int x, int y, int nrMap) throws SQLException {
         NodeDAO nodesDao = new NodeDAO();
         List<Node> nodes = nodesDao.generateNodes(nrMap);
@@ -121,13 +167,41 @@ public class Main extends Application {
         btnChooseNode.setFont(fontText);
         root.getChildren().add(btnChooseNode);
 
+        Label descLength = new Label("Write approximate length in m:");
+        descLength.setLayoutY(600);
+        descLength.setLayoutX(490);
+        root.getChildren().
+
+                add(descLength);
+
+        TextField lengthField = new TextField();
+        lengthField.setLayoutY(625);
+        lengthField.setLayoutX(490);
+        lengthField.setPrefWidth(250);
+        root.getChildren().
+
+                add(lengthField);
+
+        if (btnChooseNode.isDisable()) {
+            System.out.println(lengthField.getText());
+        }
+
+        Button findRoute = new Button("Find route");
+        findRoute.setLayoutY(600);
+        findRoute.setLayoutX(790);
+        findRoute.setPrefHeight(50);
+        findRoute.setPrefWidth(170);
+        findRoute.setFont(fontText);
+        root.getChildren().
+
+                add(findRoute);
+
         btnChooseNode.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 root.setOnMousePressed(new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent mouseEvent) {
-
 
                         Node choseCircle = null;
                         try {
@@ -144,48 +218,38 @@ public class Main extends Application {
                             root.getChildren().add(circleNode);
                             btnChooseNode.setDisable(true);
 
+                            if (lengthField.getText() != null) {
+
+                                messageBox("Cautarea unei rute va dura cateva secunde...");
+
+                                Node finalChoseCircle = choseCircle;
+                                findRoute.setOnAction(new EventHandler<ActionEvent>() {
+                                    @Override
+                                    public void handle(ActionEvent actionEvent) {
+                                        int choseLength = Integer.parseInt(lengthField.getText());
+                                        Route alg = new Route();
+                                        try {
+                                            List<Node> foundCycle = alg.getCyclesFromNode(finalChoseCircle.getId(), nrMap, choseLength);
+                                            for(Node node : foundCycle){
+                                                System.out.println(node);
+                                            }
+                                            //drawPath(root, foundCycle);
+
+                                        } catch (SQLException e) {
+                                            e.printStackTrace();
+                                        }
+
+                                    }
+                                });
+                            }
+
 
                         }
                     }
                 });
-
-
-                Route alg = new Route();
-
-                try {
-                    alg.createGraph(nrMap);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-
-
             }
-
         });
-        Label descLength = new Label("Write approximate length in m:");
-        descLength.setLayoutY(600);
-        descLength.setLayoutX(490);
-        root.getChildren().
 
-                add(descLength);
-
-        TextField lengthField = new TextField();
-        lengthField.setLayoutY(625);
-        lengthField.setLayoutX(490);
-        lengthField.setPrefWidth(250);
-        root.getChildren().
-
-                add(lengthField);
-
-        Button findRoute = new Button("Find route");
-        findRoute.setLayoutY(600);
-        findRoute.setLayoutX(790);
-        findRoute.setPrefHeight(50);
-        findRoute.setPrefWidth(170);
-        findRoute.setFont(fontText);
-        root.getChildren().
-
-                add(findRoute);
 
     }
 
@@ -332,7 +396,6 @@ public class Main extends Application {
                             primaryStage.show();
                             nrMap = 1;
                             try {
-                                System.out.println("salutare");
                                 displayNodes(mapRoot, 1);
                                 displayStreets(mapRoot, 1);
                                 displayButtons(mapRoot, primaryStage);
@@ -375,7 +438,7 @@ public class Main extends Application {
 
     public static void main(String[] args) throws IOException, SQLException {
 
-        populateTables();
+        //populateTables();
         launch(args);
     }
 }

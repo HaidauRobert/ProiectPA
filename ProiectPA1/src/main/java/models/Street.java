@@ -3,8 +3,6 @@ package models;
 import dao.NodeDAO;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import static java.lang.Math.sqrt;
@@ -105,5 +103,18 @@ public class Street {
         int distance = (int) sqrt((y2 - y1) * (y2 - y1) + (x2 - x1) * (x2 - x1));
 
         return distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Street street = (Street) o;
+        return id == street.id && idNodeStart == street.idNodeStart && idNodeEnd == street.idNodeEnd && nrMap == street.nrMap && length == street.length && Objects.equals(name, street.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, idNodeStart, idNodeEnd, nrMap, length);
     }
 }
