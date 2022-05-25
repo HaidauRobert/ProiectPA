@@ -52,6 +52,7 @@ public class Main extends Application {
             lineStreet.setEndX(nodesPath.get(index).getX());
             lineStreet.setEndY(nodesPath.get(index).getY());
             root.getChildren().add(lineStreet);
+
             Circle circleNode = new Circle();
 
             circleNode.setCenterX(nodesPath.get(index).getX());
@@ -70,6 +71,14 @@ public class Main extends Application {
         lineStreet.setStartY(previousNode.getY());
         lineStreet.setEndX(nodesPath.get(0).getX());
         lineStreet.setEndY(nodesPath.get(0).getY());
+
+        Circle circleNode = new Circle();
+
+        circleNode.setCenterX(nodesPath.get(0).getX());
+        circleNode.setCenterY(nodesPath.get(0).getY());
+        circleNode.setFill(Color.RED);
+        circleNode.setRadius(10);
+        root.getChildren().add(circleNode);
         root.getChildren().add(lineStreet);
 
     }
@@ -233,7 +242,11 @@ public class Main extends Application {
                                             for(Node node : foundCycle){
                                                 System.out.println(node);
                                             }
-                                            //drawPath(root, foundCycle);
+                                            if(!foundCycle.isEmpty()) {
+                                                drawPath(root, foundCycle);
+                                            }else{
+                                                messageBox("Nu s a gasit o ruta cu lungimea specificata");
+                                            }
 
                                         } catch (SQLException e) {
                                             e.printStackTrace();
