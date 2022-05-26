@@ -65,7 +65,7 @@ public class Route {
         for(List<Node> list : foundCycles) {
             nodeLengthList = calculateLength(list);
             if(list.contains(nodeDAO.findById(idStartNode))) {
-                if (searchedLength >= nodeLengthList - 20 && searchedLength <= nodeLengthList + 20) {
+                if (searchedLength >= nodeLengthList - 200 && searchedLength <= nodeLengthList + 200) {
                     return list;
                 }
             }

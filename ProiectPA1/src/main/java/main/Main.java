@@ -211,7 +211,6 @@ public class Main extends Application {
                 root.setOnMousePressed(new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent mouseEvent) {
-
                         Node choseCircle = null;
                         try {
                             choseCircle = checkNodeInGraph((int) mouseEvent.getX(), (int) mouseEvent.getY(), nrMap);
@@ -235,6 +234,19 @@ public class Main extends Application {
                                 findRoute.setOnAction(new EventHandler<ActionEvent>() {
                                     @Override
                                     public void handle(ActionEvent actionEvent) {
+                                        Pane newRoot = new Pane();
+                                        Scene mapScene = new Scene(newRoot, 1000, 1000);
+                                        primaryStage.setScene(mapScene);
+                                        primaryStage.show();
+                                        try {
+                                            displayNodes(newRoot, nrMap);
+                                            displayStreets(newRoot, nrMap);
+                                            displayButtons(newRoot, primaryStage);
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            e.printStackTrace();
+                                        }
                                         int choseLength = Integer.parseInt(lengthField.getText());
                                         Route alg = new Route();
                                         try {
@@ -243,7 +255,7 @@ public class Main extends Application {
                                                 System.out.println(node);
                                             }
                                             if(!foundCycle.isEmpty()) {
-                                                drawPath(root, foundCycle);
+                                                drawPath(newRoot, foundCycle);
                                             }else{
                                                 messageBox("Nu s a gasit o ruta cu lungimea specificata");
                                             }
@@ -451,7 +463,7 @@ public class Main extends Application {
 
     public static void main(String[] args) throws IOException, SQLException {
 
-        //populateTables();
+        populateTables();
         launch(args);
     }
 }
