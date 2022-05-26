@@ -40,27 +40,11 @@ public class Route {
         for (Street street : streets) {
             graph.addEdge(nodeDAO.findById(street.getIdNodeStart()), nodeDAO.findById(street.getIdNodeEnd()), street);
         }
-        if (nrMap==1&&ok1==0)
-        {foundCycles1 = testCicluri.obtineCicluri(1);
-        ok1=1;}
-        if (nrMap==2&&ok2==0)
-        {foundCycles2 = testCicluri.obtineCicluri(2);
-        ok2=1;}
-        if (nrMap==3&&ok3==0)
-        {foundCycles3 = testCicluri.obtineCicluri(3);
-        ok3=1;}
+
     }
 
-    public List<Node> getCyclesFromNode(int idStartNode, int nrMap, int searchedLength) throws SQLException {
+    public List<Node> getCyclesFromNode(int idStartNode, int nrMap, int searchedLength, List<List<Node>> foundCycles) throws SQLException {
         createGraph(nrMap);
-        List<List<Node>> foundCycles;
-        if (nrMap==1)
-            foundCycles=foundCycles1;
-        else
-        if (nrMap==2)
-            foundCycles=foundCycles2;
-        else
-            foundCycles=foundCycles3;
         for (Node node : graph.vertexSet()) {
             isVisited.put(node.getId(), 0);
 

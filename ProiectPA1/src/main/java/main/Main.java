@@ -2,6 +2,7 @@ package main;
 
 import algorithm.AdjacencyMatrix;
 import algorithm.Route;
+import algorithm.TestCycles;
 import dao.NodeDAO;
 import dao.StreetDAO;
 import dao.UserDAO;
@@ -28,7 +29,10 @@ import java.util.List;
 public class Main extends Application {
 
     int nrMap;
-
+    List<List<Node>> foundCycles1;
+    List<List<Node>> foundCycles2;
+    List<List<Node>> foundCycles3;
+    int ok1=0,ok2=0,ok3=0;
     public void messageBox(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Message Here...");
@@ -235,6 +239,31 @@ public class Main extends Application {
                                 findRoute.setOnAction(new EventHandler<ActionEvent>() {
                                     @Override
                                     public void handle(ActionEvent actionEvent) {
+                                        TestCycles testCicluri = new TestCycles();
+                                        if (nrMap==1&&ok1==0)
+                                        {
+                                            try {
+                                                foundCycles1 = testCicluri.obtineCicluri(1);
+                                            } catch (SQLException e) {
+                                                e.printStackTrace();
+                                            }
+                                            ok1=1;}
+                                        if (nrMap==2&&ok2==0)
+                                        {
+                                            try {
+                                                foundCycles2 = testCicluri.obtineCicluri(2);
+                                            } catch (SQLException e) {
+                                                e.printStackTrace();
+                                            }
+                                            ok2=1;}
+                                        if (nrMap==3&&ok3==0)
+                                        {
+                                            try {
+                                                foundCycles3 = testCicluri.obtineCicluri(3);
+                                            } catch (SQLException e) {
+                                                e.printStackTrace();
+                                            }
+                                            ok3=1;}
                                         Pane newRoot = new Pane();
                                         Scene mapScene = new Scene(newRoot, 1000, 1000);
                                         primaryStage.setScene(mapScene);
@@ -256,7 +285,15 @@ public class Main extends Application {
                                             e.printStackTrace();
                                         }
                                         try {
-                                            List<Node> foundCycle = alg.getCyclesFromNode(finalChoseCircle.getId(), nrMap, choseLength);
+                                            List<List<Node>> foundCyclesCurent;
+                                            if (nrMap==1)
+                                            foundCyclesCurent=foundCycles1;
+                                            else
+                                            if (nrMap==2)
+                                                foundCyclesCurent=foundCycles2;
+                                            else
+                                                foundCyclesCurent=foundCycles3;
+                                            List<Node> foundCycle = alg.getCyclesFromNode(finalChoseCircle.getId(), nrMap, choseLength, foundCyclesCurent);
                                             for(Node node : foundCycle){
                                                 System.out.println(node);
                                             }
