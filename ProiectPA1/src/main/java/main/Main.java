@@ -1,5 +1,6 @@
 package main;
 
+import algorithm.AdjacencyMatrix;
 import algorithm.Route;
 import dao.NodeDAO;
 import dao.StreetDAO;
@@ -248,7 +249,12 @@ public class Main extends Application {
                                             e.printStackTrace();
                                         }
                                         int choseLength = Integer.parseInt(lengthField.getText());
-                                        Route alg = new Route();
+                                        Route alg = null;
+                                        try {
+                                            alg = new Route();
+                                        } catch (SQLException e) {
+                                            e.printStackTrace();
+                                        }
                                         try {
                                             List<Node> foundCycle = alg.getCyclesFromNode(finalChoseCircle.getId(), nrMap, choseLength);
                                             for(Node node : foundCycle){
@@ -462,8 +468,7 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) throws IOException, SQLException {
-
-        populateTables();
+       // populateTables();
         launch(args);
     }
 }

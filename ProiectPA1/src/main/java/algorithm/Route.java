@@ -17,7 +17,13 @@ public class Route {
     Map<Street, Boolean> isEdgeVisited = new HashMap<>();
     List<Node> nodeList = new ArrayList<>();
     Stack<Integer> stack = new Stack<>();
-    List<List<Node>> foundCycles = new ArrayList<>();
+    TestCycles testCicluri = new TestCycles();
+    List<List<Node>> foundCycles1;
+    List<List<Node>> foundCycles2;
+    List<List<Node>> foundCycles3;
+    int ok1=0,ok2=0,ok3=0;
+    public Route() throws SQLException {
+    }
 
     public void createGraph(int nrMap) throws SQLException {
 
@@ -34,13 +40,27 @@ public class Route {
         for (Street street : streets) {
             graph.addEdge(nodeDAO.findById(street.getIdNodeStart()), nodeDAO.findById(street.getIdNodeEnd()), street);
         }
-
-
+        if (nrMap==1&&ok1==0)
+        {foundCycles1 = testCicluri.obtineCicluri(1);
+        ok1=1;}
+        if (nrMap==2&&ok2==0)
+        {foundCycles2 = testCicluri.obtineCicluri(2);
+        ok2=1;}
+        if (nrMap==3&&ok3==0)
+        {foundCycles3 = testCicluri.obtineCicluri(3);
+        ok3=1;}
     }
 
     public List<Node> getCyclesFromNode(int idStartNode, int nrMap, int searchedLength) throws SQLException {
-
         createGraph(nrMap);
+        List<List<Node>> foundCycles;
+        if (nrMap==1)
+            foundCycles=foundCycles1;
+        else
+        if (nrMap==2)
+            foundCycles=foundCycles2;
+        else
+            foundCycles=foundCycles3;
         for (Node node : graph.vertexSet()) {
             isVisited.put(node.getId(), 0);
 
@@ -50,11 +70,6 @@ public class Route {
             isEdgeVisited.put(street, false);
         }
 
-        for(Node node : graph.vertexSet()){
-            if(isVisited.get(node.getId()) == 0){
-                dfs(node.getId(),-1,stack,isVisited);
-            }
-        }
         int nodeLengthList = 0;
 
         for(List<Node> list : foundCycles) {
@@ -89,7 +104,7 @@ public class Route {
     }
 
 
-    void dfs(int src, int parent, Stack<Integer> stack, Map<Integer, Integer> isVisited) throws SQLException {
+    /* void dfs(int src, int parent, Stack<Integer> stack, Map<Integer, Integer> isVisited) throws SQLException {
         isVisited.put(src, 1);
         stack.push(src);
         Node foundNode = nodeDAO.findById(src);
@@ -116,7 +131,7 @@ public class Route {
         }
         isVisited.put(src,2);
         stack.pop();
-    }
+    } */
 
 
     /*
