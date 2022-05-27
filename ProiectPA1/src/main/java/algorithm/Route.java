@@ -2,6 +2,8 @@ package algorithm;
 
 import dao.NodeDAO;
 import dao.StreetDAO;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import models.Node;
 import models.Street;
 import org.jgrapht.Graph;
@@ -21,8 +23,20 @@ public class Route {
     List<List<Node>> foundCycles1;
     List<List<Node>> foundCycles2;
     List<List<Node>> foundCycles3;
-    int ok1=0,ok2=0,ok3=0;
+    int ok1 = 0, ok2 = 0, ok3 = 0;
+
     public Route() throws SQLException {
+    }
+
+    public void messageBox(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Message Here...");
+        alert.setContentText(message);
+        alert.showAndWait().ifPresent(rs -> {
+            if (rs == ButtonType.OK) {
+                System.out.println("Pressed OK.");
+            }
+        });
     }
 
     public void createGraph(int nrMap) throws SQLException {
@@ -56,16 +70,19 @@ public class Route {
 
         int nodeLengthList = 0;
 
-        for(List<Node> list : foundCycles) {
+        for (List<Node> list : foundCycles) {
             System.out.println(list);
             System.out.println(calculateLength(list));
         }
 
-        for(List<Node> list : foundCycles) {
+        for (List<Node> list : foundCycles) {
             nodeLengthList = calculateLength(list);
-            if(list.contains(nodeDAO.findById(idStartNode))) {
+            if (list.contains(nodeDAO.findById(idStartNode))) {
                 if (searchedLength >= nodeLengthList - 200 && searchedLength <= nodeLengthList + 200) {
-                    return list;
+                    {
+                        messageBox("Lungimea rutei gasite este de: " + nodeLengthList);
+                        return list;
+                    }
                 }
             }
         }
