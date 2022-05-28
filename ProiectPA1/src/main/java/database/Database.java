@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class Database {
     private static final String URL = "jdbc:postgresql://localhost:5432/RouteSeeker";
     private static final String USER = "postgres";
-    private static final String PASSWORD = "parola123";
+    private static final String PASSWORD = "developer";
     private static Connection connection = null;
 
     private Database() {

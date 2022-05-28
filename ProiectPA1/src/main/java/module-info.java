@@ -5,10 +5,14 @@ module com.example.proiectpa1 {
     requires org.controlsfx.controls;
     requires org.kordamp.bootstrapfx.core;
     requires java.sql;
-    requires GMapsFX;
     requires org.jgrapht.core;
+    requires java.desktop;
+    requires javafx.base;
+    requires javafx.graphics;
+    requires jdk.jsobject;
 
     requires opencsv;
+
 
     opens com.example.proiectpa1 to javafx.fxml;
     exports controller;
