@@ -2,6 +2,8 @@ package algorithm;
 
 import dao.NodeDAO;
 import dao.StreetDAO;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import models.Node;
 import models.Street;
 import org.jgrapht.Graph;
@@ -13,14 +15,19 @@ import java.util.*;
 public class Route {
     Graph<Node, Street> graph = new SimpleGraph<>(Street.class);
     NodeDAO nodeDAO = new NodeDAO();
-    Map<Integer, Integer> isVisited = new HashMap<>();
-    Map<Street, Boolean> isEdgeVisited = new HashMap<>();
-    List<Node> nodeList = new ArrayList<>();
-    Stack<Integer> stack = new Stack<>();
-    List<List<Node>> foundCycles = new ArrayList<>();
+
+    public void messageBox(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Message Here...");
+        alert.setContentText(message);
+        alert.showAndWait().ifPresent(rs -> {
+            if (rs == ButtonType.OK) {
+                System.out.println("Pressed OK.");
+            }
+        });
+    }
 
     public void createGraph(int nrMap) throws SQLException {
-
 
         StreetDAO streetDAO = new StreetDAO();
 
@@ -35,38 +42,27 @@ public class Route {
             graph.addEdge(nodeDAO.findById(street.getIdNodeStart()), nodeDAO.findById(street.getIdNodeEnd()), street);
         }
 
-
     }
 
-    public List<Node> getCyclesFromNode(int idStartNode, int nrMap, int searchedLength) throws SQLException {
+    public List<Node> getCyclesFromNode(int idStartNode, int nrMap, int searchedLength, List<List<Node>> foundCycles) throws SQLException {
 
         createGraph(nrMap);
-        for (Node node : graph.vertexSet()) {
-            isVisited.put(node.getId(), 0);
-
-        }
-
-        for (Street street : graph.edgeSet()) {
-            isEdgeVisited.put(street, false);
-        }
-
-        for(Node node : graph.vertexSet()){
-            if(isVisited.get(node.getId()) == 0){
-                dfs(node.getId(),-1,stack,isVisited);
-            }
-        }
         int nodeLengthList = 0;
 
-        for(List<Node> list : foundCycles) {
+        for (List<Node> list : foundCycles) {
             System.out.println(list);
             System.out.println(calculateLength(list));
         }
 
-        for(List<Node> list : foundCycles) {
+        Node startNode = nodeDAO.findById(idStartNode);
+        for (List<Node> list : foundCycles) {
             nodeLengthList = calculateLength(list);
-            if(list.contains(nodeDAO.findById(idStartNode))) {
-                if (searchedLength >= nodeLengthList - 20 && searchedLength <= nodeLengthList + 20) {
-                    return list;
+            if (list.contains(startNode)) {
+                if (searchedLength >= nodeLengthList - 200 && searchedLength <= nodeLengthList + 200) {
+                    {
+                        messageBox("Lungimea rutei gasite este de: " + nodeLengthList);
+                        return list;
+                    }
                 }
             }
         }
@@ -89,7 +85,7 @@ public class Route {
     }
 
 
-    void dfs(int src, int parent, Stack<Integer> stack, Map<Integer, Integer> isVisited) throws SQLException {
+    /* void dfs(int src, int parent, Stack<Integer> stack, Map<Integer, Integer> isVisited) throws SQLException {
         isVisited.put(src, 1);
         stack.push(src);
         Node foundNode = nodeDAO.findById(src);
@@ -116,45 +112,9 @@ public class Route {
         }
         isVisited.put(src,2);
         stack.pop();
-    }
+    } */
 
 
-    /*
-    public void dfs(int idNode, int idNodeStart, Map<Integer, Boolean> isVisited, Map<Street, Boolean> isEdgeVisited, List<Node> nodeList, int searchedLength) throws SQLException {
-        if (isVisited.get(idNode)) {
-            if (idNode == idNodeStart) {
-                if (nodeList.size() >= 3) {
-
-                    foundCycleList = new ArrayList<>();
-                    int nodeLengthList = calculateLength(nodeList);
-                    if (searchedLength >= nodeLengthList - 10 && searchedLength <= nodeLengthList + 10) {
-
-                        foundCycleList.addAll(nodeList);
-                    }
-                }
-            }
-        } else {
-
-            isVisited.put(idNode, true);
-            Node foundNode = nodeDAO.findById(idNode);
-            nodeList.add(foundNode);
-
-            for (Node node : graph.vertexSet())
-                if (graph.containsEdge(node, foundNode) && !isEdgeVisited.get(graph.getEdge(node, foundNode))) {
-                    isEdgeVisited.put(graph.getEdge(node, foundNode), true);
-                    dfs(node.getId(), idNodeStart, isVisited, isEdgeVisited, nodeList, searchedLength);
-                }
-
-            isVisited.put(idNode, false);
-            for (Street street : graph.edgeSet()) {
-                isEdgeVisited.put(street, false);
-            }
-            isEdgeVisited.put(graph.getEdge(foundNode, nodeDAO.findById(idNodeStart)), true);
-            nodeList.remove(nodeDAO.findById(idNode));
-        }
-
-    }
-*/
 }
 
 

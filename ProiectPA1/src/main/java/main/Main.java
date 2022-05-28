@@ -1,6 +1,7 @@
 package main;
 
 import algorithm.Route;
+import algorithm.TestCycles;
 import dao.NodeDAO;
 import dao.StreetDAO;
 import dao.UserDAO;
@@ -27,6 +28,10 @@ import java.util.List;
 public class Main extends Application {
 
     int nrMap;
+    List<List<Node>> foundCyclesMap1;
+    List<List<Node>> foundCyclesMap2;
+    List<List<Node>> foundCyclesMap3;
+    boolean isMap1Calculated = false, isMap2Calculated = false, isMap3Calculated = false;
 
     public void messageBox(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -39,9 +44,10 @@ public class Main extends Application {
         });
     }
 
-    public void drawPath(Pane root, List<Node> nodesPath){
+    public void drawPath(Pane root, List<Node> nodesPath) {
 
         Node previousNode = nodesPath.get(0);
+        System.out.println(nodesPath);
         for (int index = 1; index < nodesPath.size(); index++) {
 
             Line lineStreet = new Line();
@@ -51,6 +57,7 @@ public class Main extends Application {
             lineStreet.setStartY(previousNode.getY());
             lineStreet.setEndX(nodesPath.get(index).getX());
             lineStreet.setEndY(nodesPath.get(index).getY());
+
             root.getChildren().add(lineStreet);
 
             Circle circleNode = new Circle();
@@ -211,8 +218,8 @@ public class Main extends Application {
                 root.setOnMousePressed(new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent mouseEvent) {
-
                         Node choseCircle = null;
+
                         try {
                             choseCircle = checkNodeInGraph((int) mouseEvent.getX(), (int) mouseEvent.getY(), nrMap);
                         } catch (SQLException e) {
@@ -232,19 +239,69 @@ public class Main extends Application {
                                 messageBox("Cautarea unei rute va dura cateva secunde...");
 
                                 Node finalChoseCircle = choseCircle;
+                                TestCycles findCycles = new TestCycles();
                                 findRoute.setOnAction(new EventHandler<ActionEvent>() {
                                     @Override
                                     public void handle(ActionEvent actionEvent) {
+
+                                        if (nrMap == 1 && !isMap1Calculated) {
+                                            try {
+                                                foundCyclesMap1 = findCycles.getCycles(1);
+
+                                            } catch (SQLException e) {
+                                                e.printStackTrace();
+                                            }
+                                            isMap1Calculated = true;
+                                        }
+                                        if (nrMap == 2 && !isMap2Calculated) {
+                                            try {
+                                                foundCyclesMap2 = findCycles.getCycles(2);
+                                            } catch (SQLException e) {
+                                                e.printStackTrace();
+                                            }
+                                            isMap2Calculated = true;
+                                        }
+                                        if (nrMap == 3 && !isMap3Calculated) {
+                                            TestCycles findCycles3 = new TestCycles();
+                                            try {
+                                                foundCyclesMap3 = findCycles3.getCycles(3);
+                                            } catch (SQLException e) {
+                                                e.printStackTrace();
+                                            }
+                                            isMap3Calculated = true;
+                                        }
+                                        Pane newRoot = new Pane();
+                                        Scene mapScene = new Scene(newRoot, 1000, 1000);
+                                        primaryStage.setScene(mapScene);
+                                        primaryStage.show();
+                                        try {
+                                            displayNodes(newRoot, nrMap);
+                                            displayStreets(newRoot, nrMap);
+                                            displayButtons(newRoot, primaryStage);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
                                         int choseLength = Integer.parseInt(lengthField.getText());
+
                                         Route alg = new Route();
                                         try {
-                                            List<Node> foundCycle = alg.getCyclesFromNode(finalChoseCircle.getId(), nrMap, choseLength);
-                                            for(Node node : foundCycle){
+                                            List<List<Node>> foundCurrentCycles = null;
+                                            if (nrMap == 1) {
+                                                foundCurrentCycles = foundCyclesMap1;
+                                            } else if (nrMap == 2) {
+                                                foundCurrentCycles = foundCyclesMap2;
+                                            } else if (nrMap == 3) {
+                                                foundCurrentCycles = foundCyclesMap3;
+                                            }
+
+
+                                            List<Node> foundCycle = alg.getCyclesFromNode(finalChoseCircle.getId(), nrMap, choseLength, foundCurrentCycles);
+                                            for (Node node : foundCycle) {
                                                 System.out.println(node);
                                             }
-                                            if(!foundCycle.isEmpty()) {
-                                                drawPath(root, foundCycle);
-                                            }else{
+                                            if (!foundCycle.isEmpty()) {
+                                                drawPath(newRoot, foundCycle);
+                                            } else {
                                                 messageBox("Nu s a gasit o ruta cu lungimea specificata");
                                             }
 
@@ -325,7 +382,7 @@ public class Main extends Application {
 
         Button btnRegister = new Button("Register");
         TextField usernameBox = new TextField();
-        TextField passwordBox = new TextField();
+        PasswordField passwordBox = new PasswordField();
         Label usernameType = new Label("Type your username");
         Label passwordType = new Label("Type your password");
         Label loginText = new Label("Already have an account?");
@@ -450,8 +507,7 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) throws IOException, SQLException {
-
-        //populateTables();
+        // populateTables();
         launch(args);
     }
 }
