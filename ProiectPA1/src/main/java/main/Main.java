@@ -2,6 +2,8 @@ package main;
 
 import algorithm.Route;
 import algorithm.TestCycles;
+import customExceptions.InvalidChoseCircleException;
+import customExceptions.InvalidLengthException;
 import dao.NodeDAO;
 import dao.StreetDAO;
 import dao.UserDAO;
@@ -19,6 +21,7 @@ import javafx.stage.Stage;
 import models.Node;
 import models.Street;
 import javafx.scene.input.MouseEvent;
+import utils.AlertMessage;
 import utils.ImportData;
 
 import java.io.IOException;
@@ -33,16 +36,6 @@ public class Main extends Application {
     List<List<Node>> foundCyclesMap3;
     boolean isMap1Calculated = false, isMap2Calculated = false, isMap3Calculated = false;
 
-    public void messageBox(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Message Here...");
-        alert.setContentText(message);
-        alert.showAndWait().ifPresent(rs -> {
-            if (rs == ButtonType.OK) {
-                System.out.println("Pressed OK.");
-            }
-        });
-    }
 
     public void drawPath(Pane root, List<Node> nodesPath) {
 
@@ -90,7 +83,7 @@ public class Main extends Application {
 
     }
 
-    public Node checkNodeInGraph(int x, int y, int nrMap) throws SQLException {
+    public Node checkNodeInGraph(int x, int y, int nrMap) throws SQLException, InvalidChoseCircleException {
         NodeDAO nodesDao = new NodeDAO();
         List<Node> nodes = nodesDao.generateNodes(nrMap);
         int nodeSize = 10;
@@ -101,10 +94,10 @@ public class Main extends Application {
                 return node;
             }
         }
-        return null;
+        throw new InvalidChoseCircleException();
     }
 
-    public void displayButtons(Pane root, Stage primaryStage) throws Exception {
+    public void displayButtons(Pane root, Stage primaryStage) {
 
         MenuButton btnChooseMap = new MenuButton("Choose map:");
         MenuItem menuItem1 = new MenuItem("Map 1");
@@ -224,6 +217,8 @@ public class Main extends Application {
                             choseCircle = checkNodeInGraph((int) mouseEvent.getX(), (int) mouseEvent.getY(), nrMap);
                         } catch (SQLException e) {
                             e.printStackTrace();
+                        } catch (InvalidChoseCircleException e) {
+                            e.printStackTrace();
                         }
                         if (choseCircle != null) {
                             Circle circleNode = new Circle();
@@ -236,7 +231,7 @@ public class Main extends Application {
 
                             if (lengthField.getText() != null) {
 
-                                messageBox("Cautarea unei rute va dura cateva secunde...");
+                                AlertMessage.messageBox("Cautarea unei rute va dura cateva secunde...");
 
                                 Node finalChoseCircle = choseCircle;
                                 TestCycles findCycles = new TestCycles();
@@ -282,6 +277,17 @@ public class Main extends Application {
                                             e.printStackTrace();
                                         }
                                         int choseLength = Integer.parseInt(lengthField.getText());
+                                        if (choseLength <= 300 || choseLength >= 10000) {
+
+                                            try {
+                                                throw new InvalidLengthException(lengthField.getText());
+                                            } catch (InvalidLengthException e) {
+                                                e.printStackTrace();
+                                                return;
+                                            }
+
+                                        }
+
 
                                         Route alg = new Route();
                                         try {
@@ -295,14 +301,16 @@ public class Main extends Application {
                                             }
 
 
-                                            List<Node> foundCycle = alg.getCyclesFromNode(finalChoseCircle.getId(), nrMap, choseLength, foundCurrentCycles);
+                                            List<Node> foundCycle = alg.getCyclesFromNode(finalChoseCircle.getId(), nrMap,
+                                                    choseLength, foundCurrentCycles);
                                             for (Node node : foundCycle) {
                                                 System.out.println(node);
                                             }
                                             if (!foundCycle.isEmpty()) {
                                                 drawPath(newRoot, foundCycle);
                                             } else {
-                                                messageBox("Nu s a gasit o ruta cu lungimea specificata");
+                                                AlertMessage.messageBox("Nu s a gasit o ruta cu lungimea specificata");
+
                                             }
 
                                         } catch (SQLException e) {

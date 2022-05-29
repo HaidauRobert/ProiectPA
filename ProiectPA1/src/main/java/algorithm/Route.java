@@ -8,6 +8,7 @@ import models.Node;
 import models.Street;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.SimpleGraph;
+import utils.AlertMessage;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -15,17 +16,6 @@ import java.util.*;
 public class Route {
     Graph<Node, Street> graph = new SimpleGraph<>(Street.class);
     NodeDAO nodeDAO = new NodeDAO();
-
-    public void messageBox(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Message Here...");
-        alert.setContentText(message);
-        alert.showAndWait().ifPresent(rs -> {
-            if (rs == ButtonType.OK) {
-                System.out.println("Pressed OK.");
-            }
-        });
-    }
 
     public void createGraph(int nrMap) throws SQLException {
 
@@ -60,7 +50,7 @@ public class Route {
             if (list.contains(startNode)) {
                 if (searchedLength >= nodeLengthList - 200 && searchedLength <= nodeLengthList + 200) {
                     {
-                        messageBox("Lungimea rutei gasite este de: " + nodeLengthList);
+                        AlertMessage.messageBox("Lungimea rutei gasite este de: " + nodeLengthList);
                         return list;
                     }
                 }

@@ -16,13 +16,13 @@ import java.util.Map;
 public class AdjacencyList {
 
     static Graph<Node, Street> graph = new SimpleGraph<>(Street.class);
-    static Map<Node, List<Node>> adjList= new HashMap<>();
+    static Map<Node, List<Node>> adjList = new HashMap<>();
 
 
     public static void createGraph(int nrMap) throws SQLException {
 
         graph = new SimpleGraph<>(Street.class);
-        adjList= new HashMap<>();
+        adjList = new HashMap<>();
 
         StreetDAO streetDAO = new StreetDAO();
         NodeDAO nodeDAO = new NodeDAO();
@@ -43,11 +43,11 @@ public class AdjacencyList {
 
         createGraph(nrMap);
 
-        for(Node node : graph.vertexSet()){
+        for (Node node : graph.vertexSet()) {
             adjList.put(node, new ArrayList<>());
 
-            for(Node nodeAdj : graph.vertexSet()){
-                if(graph.containsEdge(node, nodeAdj)){
+            for (Node nodeAdj : graph.vertexSet()) {
+                if (graph.containsEdge(node, nodeAdj)) {
                     adjList.get(node).add(nodeAdj);
                 }
             }
