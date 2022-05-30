@@ -1,4 +1,4 @@
-# ProiectPA
+# ProiectPA - Haidau Robert, Burada Irina
 
 Enunt : RouteSeeker: Determinarea rutelor pentru jogging/plimbari intr-un oras (Finding fixed-length cycles in a graph)
 
