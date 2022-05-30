@@ -35,6 +35,7 @@ public class StrongConnectedComponents {
         this.currentSCCs = new ArrayList<>();
 
         this.makeAdjListSubgraph(node);
+
         for (Map.Entry<Node, List<Node>> pair : adjMainList.entrySet()) {
             if (!visited.get(pair.getKey().getId())) {
                 getStrongConnectedComponents(pair.getKey().getId());
@@ -96,9 +97,7 @@ public class StrongConnectedComponents {
                     min = ind;
                 }
             }
-
         }
-
         return currentSCC;
     }
 

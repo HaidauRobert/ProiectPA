@@ -18,7 +18,6 @@ public class AdjacencyList {
     static Graph<Node, Street> graph = new SimpleGraph<>(Street.class);
     static Map<Node, List<Node>> adjList = new HashMap<>();
 
-
     public static void createGraph(int nrMap) throws SQLException {
 
         graph = new SimpleGraph<>(Street.class);

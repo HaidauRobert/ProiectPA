@@ -21,6 +21,10 @@ public class ElementaryCycles {
         this.adjList = AdjacencyList.getAdjList(nrMap);
     }
 
+    /**
+     * @return lista de cicluri elementare
+     * @throws SQLException
+     */
     public List<List<Node>> getElementaryCycles() throws SQLException {
         this.cycles = new ArrayList<>();
         this.blocked = new HashMap<>(graphNodes.size());
@@ -54,6 +58,13 @@ public class ElementaryCycles {
         return this.cycles;
     }
 
+    /**
+     * @param currentNode nodul pe care vrem ca ciclul sa l contina
+     * @param startNode nodul de start al ciclului
+     * @param adjList lista de adiacenta a comp tare conexe
+     * @return
+     * @throws SQLException
+     */
     private boolean findCycles(int currentNode, int startNode, Map<Node, List<Node>> adjList) throws SQLException {
         boolean flag = false;
         this.stack.add(currentNode);
